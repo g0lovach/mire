@@ -10,8 +10,8 @@
         (mapcat (fn [[dir to]]
                  (reduce 
                   (fn [old k] (if (and (= (first k) dir))
-                                [[dir [to (ref (k 3))]]] old)) 
-                  [[dir [to (ref '())]]]
+                                [[dir [to (ref (k 3)) (ref #{})]]] old)) 
+                  [[dir [to (ref '()) (ref #{})]]]
                   relevant-keys)) (:exits room))]
        {:id (:id room)
         :name (:id room)
@@ -19,8 +19,8 @@
         :exits (ref (into {} exits-with-keys))
         :items (ref (cm/to-count-map (:keys room)))
         :inhabitants (ref #{})}))
-
-
+         
+       
 
 (defn load-room [rooms file]
   (let [room (read-string (slurp (.getAbsolutePath file)))]
@@ -37,8 +37,8 @@
   in it. Files should be maps containing room data."
   [rooms]
   (dosync
-    (let [[generated-rooms keys-data] (gen/generate-full) _ (println "generated-rooms=" generated-rooms)]
-      (reduce (fn [prev room] (conj prev {(:id room) (convert-room room keys-data)})) rooms generated-rooms))))
+   (let [[generated-rooms keys-data] (gen/generate-full) _ (println "generated-rooms=" generated-rooms)]
+    (reduce (fn [prev room] (conj prev {(:id room) (convert-room room keys-data)})) rooms generated-rooms))))
 
 (defn add-rooms
   "Look through all the files in a dir for files describing rooms and add
